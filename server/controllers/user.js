@@ -8,12 +8,18 @@ async function handleUserRegister(req, res) {
     if (!name || !email || !password) {
       return res.status(400).json({ msg: "Please provide all fields" });
     }
+
+    const isUser = await User.findOne({email});
+    if(isUser){
+      return res.status(400).json({error: true, msg:"User already exists"})
+    }
+
     const saltRounds = 10;
     const salt = await bcrypt.genSalt(saltRounds);
     const hashedPassword = await bcrypt.hash(password, salt);
 
     const result = await User.create({ name, email, password: hashedPassword });
-    res.status(201).json({ msg: "user created successfully", result });
+    res.status(201).json({ msg: "User created successfully", result });
   } catch (error) {
     console.log("error creating user", error);
     res.status(500).json({ msg: "error creating user" });

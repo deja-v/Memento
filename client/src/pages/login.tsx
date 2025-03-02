@@ -3,38 +3,37 @@ import { useNavigate } from "react-router-dom";
 import PasswordInput from "../components/input/PasswordInput";
 import { validateEmail } from "../utils/helper.js";
 import axiosInstance from "../utils/axiosinstance.js";
-import {isAxiosError} from "axios";
+import { isAxiosError } from "axios";
 const Login = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
-  
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if(!validateEmail(email)){
+
+    if (!validateEmail(email)) {
       setError("Please enter a valid email address");
       return;
     }
-    if(!password){
+    if (!password) {
       setError("Please enter a password");
       return;
     }
     setError("");
 
-    try{
+    try {
       const response = await axiosInstance.post("/user/login", {
         email: email,
-        password: password
-      })
-      if(response.data &&  response.data.user){
+        password: password,
+      });
+      console.log(response.data)
+      if (response.data && response.data.accessToken) {
         localStorage.setItem("token", response.data.accessToken);
         navigate("/dashboard");
       }
-      
-    }
-    catch (error) {
+    } catch (error) {
       if (isAxiosError(error) && error.response) {
         const data = error.response.data as { msg?: string };
         setError(data.msg || "An unexpected error occurred. Please try again");
@@ -75,9 +74,9 @@ const Login = () => {
               onChange={(e) => setEmail(e.target.value)}
             />
 
-            <PasswordInput 
-            value={password}
-            onChange={(e)=> setPassword(e.target.value)}
+            <PasswordInput
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
             />
             {error && <p className="text-red-500 text-xs pb-1">{error}</p>}
 
