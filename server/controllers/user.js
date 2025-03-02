@@ -23,7 +23,6 @@ async function handleUserRegister(req, res) {
 async function handleUserLogin(req, res) {
   try {
     const { email, password } = req.body;
-
     const entry = await User.findOne({
       email,
     });
@@ -41,7 +40,7 @@ async function handleUserLogin(req, res) {
       process.env.SECRET_KEY,
       { expiresIn: "1h" }
     );
-    return res.status(200).json({ msg: "success", name: name, user: token });
+    return res.status(200).json({error:false, msg: "success", name: name, accessToken:token });
   } catch (error) {
     console.log("error logging in");
     res.status(400).json({ status: "error logging in", user: false });
