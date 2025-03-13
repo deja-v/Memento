@@ -1,9 +1,28 @@
 import { TravelJournal } from "../models/travel-journal.model.js";
 // import type { File } from "multer";
+import { User } from "../models/user.model.js";
 import path from "path";
 import fs from "fs";
 import { start } from "repl";
+import { error } from "console";
 const __dirname = path.resolve();
+
+async function handleGetUser(req,res){
+  if (!req.user) {
+    return res.status(401).json({ error: true, message: "Unauthorized" });
+  }
+  try{
+    const userId = req.user._id;
+    const isUser = await User.findOne({_id: userId});
+    if(!isUser){
+      res.status(401).json({error:true, message:"User not found"});
+    }
+    return res.json({user: isUser, message: ""})
+  }catch(error){
+    console.log(error.message);
+    res.status(500).json({error:true, message:error.message});
+  }
+}
 
 async function handleAddTravelJournal(req, res) {
   try {
@@ -37,8 +56,7 @@ async function handleAddTravelJournal(req, res) {
 
 async function handleGetAllTravelJournal(req, res) {
   try {
-    const entry = req.user;
-    const userId = entry._id;
+    const userId = req.user._id;
 
     const result = await TravelJournal.find({ userId });
     res
@@ -55,8 +73,7 @@ async function handleEditTravelJournal(req, res) {
     const { id } = req.params;
     const { title, description, visitedLocation, imageUrl, visitedDate } =
       req.body;
-    const entry = req.user;
-    const userId = entry._id;
+    const userId = req.user._id;
     if (
       !title ||
       !description ||
@@ -193,6 +210,7 @@ async function handleFilter(req, res) {
 }
 
 export {
+  handleGetUser,
   handleAddTravelJournal,
   handleGetAllTravelJournal,
   handleEditTravelJournal,

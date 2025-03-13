@@ -1,5 +1,6 @@
 import { Router } from "express";
 import {
+  handleGetUser,
   handleAddTravelJournal,
   handleGetAllTravelJournal,
   handleEditTravelJournal,
@@ -10,6 +11,10 @@ import {
 } from "../controllers/travel-journal.js";
 
 const router = Router();
+
+router.get("/get-user", (req,res)=>{
+  handleGetUser(req,res);
+})
 
 router.post("/add", (req, res) => {
   handleAddTravelJournal(req, res);

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import PasswordInput from "../components/input/PasswordInput";
+import PasswordInput from "../components/input/password-input.js";
 import { validateEmail } from "../utils/helper.js";
 import axiosInstance from "../utils/axiosinstance.js";
 import { isAxiosError } from "axios";
