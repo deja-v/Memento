@@ -9,16 +9,17 @@ import { ToastContainer, toast } from "react-toastify";
 import Modal from "react-modal";
 import "react-toastify/dist/ReactToastify.css";
 import AddEditTravelJournal from "../components/add-edit-travel-journal";
+import ViewTravelJournal from "../components/view-travel-journal";
 export interface Journal {
   _id: string;
   title: string;
   description: string;
-  visitedLocation: string[];
+  visitedLocation: any[];
   isFavourite: boolean;
   userId: string;
   createdOn: string;
-  imageUrl: string;
-  visitedDate: string;
+  imageUrl: File | string | null;
+  visitedDate: Date;
 }
 
 const Home: React.FC = () => {
@@ -30,6 +31,10 @@ const Home: React.FC = () => {
     type: 'add',
     data: null,
   });
+  const [openViewModal, setOpenViewModal] = useState({
+    isOpen: false,
+    data:null,
+  })
 
   const getUserInfo = async () => {
     try {
@@ -64,16 +69,15 @@ const Home: React.FC = () => {
     }
   };
 
-  const handleEdit = (data: Journal) => {
-    // Implement your edit functionality here
+  const handleEdit = (data: any) => {
+    setOpenAddEditModal({isOpen:true, type: "edit", data:data})
   };
 
-  const handleViewJournal = (data: Journal) => {
-    // Implement your view journal functionality here
+  const handleViewJournal = (data: any) => {
+    setOpenViewModal({isOpen:true, data})
   };
 
-  const updateIsFavourite = async (journalData: Journal) => {
-    // Implement your update favourite functionality here
+  const updateIsFavourite = async (journalData: any) => {
     const journalId = journalData._id;
     try {
       const response = await axiosInstance.put(
@@ -159,6 +163,32 @@ const Home: React.FC = () => {
           getAllTravelJournals={getAllTravelJournals}
         />
       </Modal>
+
+      <Modal
+        isOpen={openViewModal.isOpen}
+        onRequestClose={()=>{}}
+        style={{
+          overlay: {
+            backgroundColor: "rgba(0,0,0,0,2)",
+            zIndex: 999,
+          }
+        }}
+        appElement={document.getElementById("root") as HTMLElement}
+        className="model-box"
+      >
+        <ViewTravelJournal
+          journalInfo={openViewModal.data || null}
+          onClose={()=>{
+            setOpenViewModal((prevState) => ({...prevState, isOpen: false}));
+          }}
+          onEditClick={()=>{
+            setOpenViewModal((prevState) => ({...prevState, isOpen: false}))
+            handleEdit(openViewModal.data || null)
+          }}
+          onDeleteClick={()=>{}}
+        />
+      </Modal>
+
       <button
       className="w-16 h-16 flex items-center justify-center rounded-full btn-primary fixed right-10 bottom-10"
       onClick={()=>{

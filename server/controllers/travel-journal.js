@@ -104,7 +104,7 @@ async function handleEditTravelJournal(req, res) {
     await travelJournal.save();
     res
       .status(200)
-      .json({ journal: travelJournal, msg: "updated successfully" });
+      .json({ result: travelJournal, msg: "updated successfully" });
   } catch (error) {
     console.log(error.message);
     res.status(500).json({ error: true, msg: error.message });

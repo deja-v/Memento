@@ -3,6 +3,10 @@ import DateSelector from "./input/date-selector";
 import { useState } from "react";
 import ImageSelector from "./input/image-selector";
 import TagInput from "./input/tag-input";
+import axiosInstance from "../utils/axiosinstance";
+import moment from "moment";
+import uploadImage from "../utils/uploadImage";
+import { toast } from "react-toastify";
 interface AddEditTravelJournalProps {
   journalInfo: any;
   type: string;
@@ -16,21 +20,105 @@ const AddEditTravelJournal: React.FC<AddEditTravelJournalProps> = ({
   onClose,
   getAllTravelJournals,
 }) => {
-  const [visitedDate, setVisitedDate] = useState<Date | null>(null);
-  const [title, setTitle] = useState("");
-  const [journal, setJournal] = useState("");
-  // Explicitly type journalImg as File | string | null
-  const [journalImg, setJournalImg] = useState<File | string | null>(null);
-  const [visitedLocation, setVisitedLocation] = useState<any[]>([]);
+  const [visitedDate, setVisitedDate] = useState<Date | null>(journalInfo?.visitedDate || null);
+  const [title, setTitle] = useState(journalInfo?.title || "");
+  const [journal, setJournal] = useState(journalInfo?.description || "");
+  const [journalImg, setJournalImg] = useState<File | string | null>(journalInfo?.imageUrl || null);
+  const [visitedLocation, setVisitedLocation] = useState<any[]>(journalInfo?.visitedLocation || []);
+  const [error, setError] = useState<string>("");
 
-  const handleAddOrUpdateClick = () => {};
+  const addNewTravelJournal = async () => {
+    try {
+      let imageUrl = "";
 
-  const handleDeleteJournalImg = async () => {
+      if (journalImg) {
+        const imgUploadRes = await uploadImage(journalImg);
+        imageUrl = imgUploadRes.imageUrl || "";
+      }
 
-  }
+      const response = await axiosInstance.post("/travel-journal/add", {
+        title,
+        description:journal,
+        imageUrl: imageUrl || "",
+        visitedLocation,
+        visitedDate: visitedDate
+          ? moment(visitedDate).valueOf()
+          : moment().valueOf(),
+      });
+      if (response.data && response.data.result) {
+        toast.success("Journal Added Successfully");
+        getAllTravelJournals();
+        onClose();
+      }
+    } catch (error: any) {
+      console.error(
+        "Error adding journal:",
+        error.response?.data || error.message
+      );
+      toast.error(
+        "Failed to add journal. Please check the input and try again."
+      );
+    }
+  };
+
+  const updateTravelJournal = async () => {
+    const journalId = journalInfo._id;
+    try {
+      let imageUrl = "";
+
+      if(typeof journalImg === "object"){
+        const imgUploadRes = await uploadImage(journalImg);
+        imageUrl = imgUploadRes.imageUrl || "";
+
+      }
+
+      const response = await axiosInstance.put(`/travel-journal/edit/${journalId}`, {
+        title,
+        description:journal,
+        imageUrl: imageUrl || journalInfo.imageUrl,
+        visitedLocation,
+        visitedDate: visitedDate
+          ? moment(visitedDate).valueOf()
+          : moment().valueOf(),
+      });
+      if (response.data && response.data.result) {
+        toast.success("Journal Updated Successfully");
+        getAllTravelJournals();
+        onClose();
+      }
+    } catch (error: any) {
+      console.error(
+        "Error updating journal:",
+        error.response?.data || error.message
+      );
+      toast.error(
+        "Failed to update journal. Please check the input and try again."
+      );
+      onClose()
+    }
+  };
+  const handleAddOrUpdateClick = () => {
+    if (!title) {
+      setError("Please enter the title");
+      return;
+    }
+
+    if (!journal) {
+      setError("Please enter the journal");
+    }
+
+    setError("");
+    if (type === "edit") {
+      updateTravelJournal();
+    } else {
+      addNewTravelJournal();
+    }
+  };
+
+  const handleDeleteJournalImg = async () => {};
 
   return (
-    <div>
+    <div className="relative">
       <div className="flex items-center justify-between">
         <h5 className="text-xl font-medium text-slate-700">
           {type === "add" ? "Add Journal" : "Update Journal"}
@@ -38,7 +126,7 @@ const AddEditTravelJournal: React.FC<AddEditTravelJournalProps> = ({
         <div>
           <div className="flex items-center gap-3 bg-cyan-50/50 p-2 rounded-l-lg">
             {type === "add" ? (
-              <button className="btn-small" onClick={() => {}}>
+              <button className="btn-small" onClick={handleAddOrUpdateClick}>
                 <MdAdd className="text-lg" /> ADD JOURNAL
               </button>
             ) : (
@@ -55,6 +143,9 @@ const AddEditTravelJournal: React.FC<AddEditTravelJournalProps> = ({
               <MdClose className="text-xl text-slate-400 cursor-pointer" />
             </button>
           </div>
+          {error && (
+            <p className="text-red-500 text-xs pt-2 text-right">{error}</p>
+          )}
         </div>
       </div>
 

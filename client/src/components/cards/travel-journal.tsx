@@ -1,13 +1,13 @@
 import moment from "moment";
-import React from "react";
+import {useState, useEffect} from "react";
 import { FaHeart } from "react-icons/fa";
 import { GrMapLocation } from "react-icons/gr";
 interface TravelJournalCardProps {
-  imgUrl: string;
+  imgUrl: File | string | null;
   title: string;
-  date?: string;
+  date?: Date;
   journal?: string;
-  visitedLocation?: string[];
+  visitedLocation?: any[];
   isFavourite?: boolean;
   onFavouriteClick?: () => void;
   onClick?: () => void;
@@ -24,13 +24,27 @@ const TravelJournalCard: React.FC<TravelJournalCardProps> = ({
   onFavouriteClick,
   onClick,
 }) => {
+  const [imageSrc, setImageSrc] = useState<string>("");
+
+  useEffect(() => {
+    if (imgUrl instanceof File) {
+      const objectUrl = URL.createObjectURL(imgUrl);
+      setImageSrc(objectUrl);
+      return () => URL.revokeObjectURL(objectUrl);
+    } else if (typeof imgUrl === "string") {
+      setImageSrc(imgUrl);
+    } else {
+      setImageSrc("");
+    }
+  }, [imgUrl]);
+
   return (
     <div
       className="border-[1px] rounded-lg overflow-hidden bg-white hover:shadow-lg hover:shadow-slate-200 transition-all ease-in-out relative cursor-pointer"
       onClick={onClick}
     >
       <img
-        src={imgUrl}
+        src={imageSrc}
         alt={title}
         className="w-full h-56 object-contain rounded-lg"
       />
