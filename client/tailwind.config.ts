@@ -7,7 +7,7 @@ const config: Config = {
   ],
   theme: {
     fontFamily: {
-        display: ['Poppins', 'sans-serif']
+        display: ['Poppins', 'sans-serif'],
     },
 
     extend: {

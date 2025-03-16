@@ -115,7 +115,27 @@ const AddEditTravelJournal: React.FC<AddEditTravelJournalProps> = ({
     }
   };
 
-  const handleDeleteJournalImg = async () => {};
+  const handleDeleteJournalImg = async () => {
+    const deleteImgRes = await axiosInstance.delete("/delete-image", {
+      params: {
+        imageUrl: journalInfo.imageUrl,
+      },
+    })
+    console.log(deleteImgRes)
+    if(deleteImgRes.data) {
+      const journalId = journalInfo._id;
+      const postData = {
+        title,
+        description:journal,
+        visitedLocation,
+        visitedDate: moment().valueOf(),
+        imageUrl: "",
+      }
+      const response = await axiosInstance.put(`/edit/${journalId}`, postData);
+      setJournalImg(null);
+    }
+
+  };
 
   return (
     <div className="relative">

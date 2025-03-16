@@ -10,6 +10,8 @@ import Modal from "react-modal";
 import "react-toastify/dist/ReactToastify.css";
 import AddEditTravelJournal from "../components/add-edit-travel-journal";
 import ViewTravelJournal from "../components/view-travel-journal";
+import EmptyCard from "../components/cards/empty-card";
+import Logo from "../assets/logo.png"
 export interface Journal {
   _id: string;
   title: string;
@@ -28,13 +30,13 @@ const Home: React.FC = () => {
   const [allJournals, setAllJournals] = useState<Journal[]>([]);
   const [openAddEditModal, setOpenAddEditModal] = useState({
     isOpen: false,
-    type: 'add',
+    type: "add",
     data: null,
   });
   const [openViewModal, setOpenViewModal] = useState({
     isOpen: false,
-    data:null,
-  })
+    data: null,
+  });
 
   const getUserInfo = async () => {
     try {
@@ -70,11 +72,11 @@ const Home: React.FC = () => {
   };
 
   const handleEdit = (data: any) => {
-    setOpenAddEditModal({isOpen:true, type: "edit", data:data})
+    setOpenAddEditModal({ isOpen: true, type: "edit", data: data });
   };
 
   const handleViewJournal = (data: any) => {
-    setOpenViewModal({isOpen:true, data})
+    setOpenViewModal({ isOpen: true, data });
   };
 
   const updateIsFavourite = async (journalData: any) => {
@@ -87,10 +89,8 @@ const Home: React.FC = () => {
         }
       );
       if (response.data && response.data.journal) {
-        if(journalData.isFavourite)
-          toast.success("Removed from favourites");
-        else
-          toast.success("Added to favourites");
+        if (journalData.isFavourite) toast.success("Removed from favourites");
+        else toast.success("Added to favourites");
         getAllTravelJournals();
       }
     } catch (error: unknown) {
@@ -100,6 +100,23 @@ const Home: React.FC = () => {
       } else {
         console.error("An unexpected error occurred:", error);
       }
+    }
+  };
+
+  const deleteTravelJournal = async (data: Journal | null) => {
+    const journalId = data?._id;
+
+    try {
+      const response = await axiosInstance.delete(
+        `/travel-journal/delete/${journalId}`
+      );
+      if (response.data && !response.data.error) {
+        toast.success("Journal Deleted Successfully");
+        setOpenViewModal((prevState) => ({ ...prevState, isOpen: false }));
+        getAllTravelJournals();
+      }
+    } catch (error: any) {
+      console.log("An error occured ", error);
     }
   };
 
@@ -134,7 +151,10 @@ const Home: React.FC = () => {
                   ))}
                 </div>
               ) : (
-                <></>
+                <EmptyCard
+                  imgSrc={Logo}
+                  message="Create your Journal by clicking the 'Add' button to write down your thoughts, ideas and memories. Let's get started!"
+                />
               )}
             </div>
             <div className="w-[320px]"></div>
@@ -144,12 +164,12 @@ const Home: React.FC = () => {
 
       <Modal
         isOpen={openAddEditModal.isOpen}
-        onRequestClose={()=>{}}
+        onRequestClose={() => {}}
         style={{
           overlay: {
             backgroundColor: "rgba(0,0,0,0,2)",
             zIndex: 999,
-          }
+          },
         }}
         appElement={document.getElementById("root") as HTMLElement}
         className="model-box"
@@ -157,8 +177,8 @@ const Home: React.FC = () => {
         <AddEditTravelJournal
           type={openAddEditModal.type}
           journalInfo={openAddEditModal.data}
-          onClose={()=>{
-            setOpenAddEditModal({isOpen:false,type: "add", data:null});
+          onClose={() => {
+            setOpenAddEditModal({ isOpen: false, type: "add", data: null });
           }}
           getAllTravelJournals={getAllTravelJournals}
         />
@@ -166,36 +186,38 @@ const Home: React.FC = () => {
 
       <Modal
         isOpen={openViewModal.isOpen}
-        onRequestClose={()=>{}}
+        onRequestClose={() => {}}
         style={{
           overlay: {
             backgroundColor: "rgba(0,0,0,0,2)",
             zIndex: 999,
-          }
+          },
         }}
         appElement={document.getElementById("root") as HTMLElement}
         className="model-box"
       >
         <ViewTravelJournal
           journalInfo={openViewModal.data || null}
-          onClose={()=>{
-            setOpenViewModal((prevState) => ({...prevState, isOpen: false}));
+          onClose={() => {
+            setOpenViewModal((prevState) => ({ ...prevState, isOpen: false }));
           }}
-          onEditClick={()=>{
-            setOpenViewModal((prevState) => ({...prevState, isOpen: false}))
-            handleEdit(openViewModal.data || null)
+          onEditClick={() => {
+            setOpenViewModal((prevState) => ({ ...prevState, isOpen: false }));
+            handleEdit(openViewModal.data || null);
           }}
-          onDeleteClick={()=>{}}
+          onDeleteClick={() => {
+            deleteTravelJournal(openViewModal.data || null);
+          }}
         />
       </Modal>
 
       <button
-      className="w-16 h-16 flex items-center justify-center rounded-full btn-primary fixed right-10 bottom-10"
-      onClick={()=>{
-        setOpenAddEditModal({isOpen: true, type: 'add', data: null}); 
-      }}
+        className="w-16 h-16 flex items-center justify-center rounded-full btn-primary fixed right-10 bottom-10"
+        onClick={() => {
+          setOpenAddEditModal({ isOpen: true, type: "add", data: null });
+        }}
       >
-        <MdAdd className="text-[32px] text-white"/>
+        <MdAdd className="text-[32px] text-white" />
       </button>
       <ToastContainer />
     </>
