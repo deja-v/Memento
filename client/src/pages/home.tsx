@@ -11,7 +11,11 @@ import "react-toastify/dist/ReactToastify.css";
 import AddEditTravelJournal from "../components/add-edit-travel-journal";
 import ViewTravelJournal from "../components/view-travel-journal";
 import EmptyCard from "../components/cards/empty-card";
-import Logo from "../assets/logo.png"
+import Logo from "../assets/logo.png";
+import { DayPicker } from "react-day-picker";
+import { DateRange } from "react-day-picker";
+import moment from "moment";
+import FilterInfoTitle from "../components/cards/filter-info-title";
 export interface Journal {
   _id: string;
   title: string;
@@ -28,6 +32,12 @@ const Home: React.FC = () => {
   const navigate = useNavigate();
   const [userInfo, setUserInfo] = useState(null);
   const [allJournals, setAllJournals] = useState<Journal[]>([]);
+
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filterType, setFilterType] = useState("");
+
+  const [dateRange, setDateRange] = useState<DateRange | undefined>();
+
   const [openAddEditModal, setOpenAddEditModal] = useState({
     isOpen: false,
     type: "add",
@@ -38,6 +48,15 @@ const Home: React.FC = () => {
     data: null,
   });
 
+  const getEmptyCardMessage = (filterType: string) => {
+    if (filterType === "search") {
+      return "Oops! No journals found matching your search.";
+    } else if (filterType === "date") {
+      return "No journals found in the given date range";
+    } else {
+      return "Create your Journal by clicking the 'Add' button to write down your thoughts, ideas and memories. Let's get started!";
+    }
+  };
   const getUserInfo = async () => {
     try {
       const response = await axiosInstance.get("/travel-journal/get-user");
@@ -91,7 +110,14 @@ const Home: React.FC = () => {
       if (response.data && response.data.journal) {
         if (journalData.isFavourite) toast.success("Removed from favourites");
         else toast.success("Added to favourites");
-        getAllTravelJournals();
+
+        if (filterType === "search" && searchQuery) {
+          onSearchJournal(searchQuery);
+        } else if (filterType === "date") {
+          filterJournalsByDate(dateRange!);
+        } else {
+          getAllTravelJournals();
+        }
       }
     } catch (error: unknown) {
       if (axios.isAxiosError(error) && error.response?.status === 401) {
@@ -120,6 +146,57 @@ const Home: React.FC = () => {
     }
   };
 
+  const onSearchJournal = async (query: string) => {
+    try {
+      const response = await axiosInstance.get(`/travel-journal/search/`, {
+        params: {
+          query,
+        },
+      });
+
+      if (response.data && response.data.journals) {
+        setFilterType("search");
+        setAllJournals(response.data.journals);
+      }
+    } catch (error: any) {
+      console.log("An error occured ", error);
+    }
+  };
+
+  const handleClearSearch = () => {
+    setFilterType("");
+    getAllTravelJournals();
+  };
+
+  const filterJournalsByDate = async (day: DateRange) => {
+    try {
+      const startDate = day.from ? moment(day.from).valueOf() : null;
+      const endDate = day.to ? moment(day.to).valueOf() : null;
+      if (startDate && endDate) {
+        const response = await axiosInstance.get("/travel-journal/filter", {
+          params: { startDate, endDate },
+        });
+        if (response.data && response.data.journals) {
+          setFilterType("date");
+          setAllJournals(response.data.journals);
+        }
+      }
+    } catch (error: any) {
+      console.log("An error occured ", error);
+    }
+  };
+
+  const handleDayClick = (day: DateRange) => {
+    setDateRange(day);
+    filterJournalsByDate(day);
+  };
+
+  const resetFilter = () => {
+    setDateRange(undefined);
+    setFilterType("");
+    getAllTravelJournals();
+  };
+
   useEffect(() => {
     getUserInfo();
     getAllTravelJournals();
@@ -128,9 +205,23 @@ const Home: React.FC = () => {
   return (
     <>
       <div>
-        <Navbar userInfo={userInfo} />
+        <Navbar
+          userInfo={userInfo}
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          onSearchNote={onSearchJournal}
+          handleClearSearch={handleClearSearch}
+        />
 
         <div className="w-full p-10">
+          <FilterInfoTitle
+            filterType={filterType}
+            filterDates={dateRange}
+            onClear={() => {
+              resetFilter();
+            }}
+          />
+
           <div className="flex gap-7">
             <div className="flex-1">
               {allJournals.length > 0 ? (
@@ -153,11 +244,24 @@ const Home: React.FC = () => {
               ) : (
                 <EmptyCard
                   imgSrc={Logo}
-                  message="Create your Journal by clicking the 'Add' button to write down your thoughts, ideas and memories. Let's get started!"
+                  message={getEmptyCardMessage(filterType)}
                 />
               )}
             </div>
-            <div className="w-[320px]"></div>
+            <div className="w-[320px]">
+              <div className="bg-white border border-slate-200 shadow-lg shadow-slate-200/60 rounded-lg">
+                <div className="p-3">
+                  <DayPicker
+                    captionLayout="dropdown"
+                    mode="range"
+                    required
+                    selected={dateRange}
+                    onSelect={handleDayClick}
+                    pagedNavigation
+                  />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

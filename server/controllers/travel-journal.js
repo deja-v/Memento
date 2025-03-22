@@ -202,7 +202,7 @@ async function handleFilter(req, res) {
       visitedDate: { $gte: start, $lte: end },
     }).sort({ isFavourite: -1 });
 
-    res.status(200).json({ stories: filteredJournals });
+    res.status(200).json({ journals: filteredJournals });
   } catch (error) {
     console.log(error.message);
     res.status(500).json({ error: true, message: error.message });
