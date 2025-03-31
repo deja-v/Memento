@@ -7,38 +7,45 @@ import axiosInstance from "../utils/axiosinstance";
 import moment from "moment";
 import uploadImage from "../utils/uploadImage";
 import { toast } from "react-toastify";
-interface AddEditTravelJournalProps {
-  journalInfo: any;
+
+interface AddEditMementoProps {
+  mementoInfo: any;
   type: string;
   onClose: () => void;
-  getAllTravelJournals: () => void;
+  getAllMementos: () => void;
 }
 
-const AddEditTravelJournal: React.FC<AddEditTravelJournalProps> = ({
-  journalInfo,
+const AddEditMemento: React.FC<AddEditMementoProps> = ({
+  mementoInfo,
   type,
   onClose,
-  getAllTravelJournals,
+  getAllMementos,
 }) => {
-  const [visitedDate, setVisitedDate] = useState<Date | null>(journalInfo?.visitedDate || null);
-  const [title, setTitle] = useState(journalInfo?.title || "");
-  const [journal, setJournal] = useState(journalInfo?.description || "");
-  const [journalImg, setJournalImg] = useState<File | string | null>(journalInfo?.imageUrl || null);
-  const [visitedLocation, setVisitedLocation] = useState<any[]>(journalInfo?.visitedLocation || []);
+  const [visitedDate, setVisitedDate] = useState<Date | null>(
+    mementoInfo?.visitedDate || null
+  );
+  const [title, setTitle] = useState(mementoInfo?.title || "");
+  const [memento, setMemento] = useState(mementoInfo?.description || "");
+  const [mementoImg, setMementoImg] = useState<File | null>(
+    mementoInfo?.imageUrl || null
+  );
+  const [visitedLocation, setVisitedLocation] = useState<any[]>(
+    mementoInfo?.visitedLocation || []
+  );
   const [error, setError] = useState<string>("");
 
-  const addNewTravelJournal = async () => {
+  const addNewMemento = async () => {
     try {
       let imageUrl = "";
 
-      if (journalImg) {
-        const imgUploadRes = await uploadImage(journalImg);
+      if (mementoImg) {
+        const imgUploadRes = await uploadImage(mementoImg);
         imageUrl = imgUploadRes.imageUrl || "";
       }
 
       const response = await axiosInstance.post("/travel-journal/add", {
         title,
-        description:journal,
+        description: memento,
         imageUrl: imageUrl || "",
         visitedLocation,
         visitedDate: visitedDate
@@ -46,113 +53,114 @@ const AddEditTravelJournal: React.FC<AddEditTravelJournalProps> = ({
           : moment().valueOf(),
       });
       if (response.data && response.data.result) {
-        toast.success("Journal Added Successfully");
-        getAllTravelJournals();
+        toast.success("Memento Added Successfully");
+        getAllMementos();
         onClose();
       }
     } catch (error: any) {
       console.error(
-        "Error adding journal:",
+        "Error adding memento:",
         error.response?.data || error.message
       );
       toast.error(
-        "Failed to add journal. Please check the input and try again."
+        "Failed to add memento. Please check the input and try again."
       );
     }
   };
 
-  const updateTravelJournal = async () => {
-    const journalId = journalInfo._id;
+  const updateMemento = async () => {
+    const mementoId = mementoInfo._id;
     try {
       let imageUrl = "";
 
-      if(typeof journalImg === "object"){
-        const imgUploadRes = await uploadImage(journalImg);
+      if (typeof mementoImg === "object") {
+        const imgUploadRes = await uploadImage(mementoImg);
         imageUrl = imgUploadRes.imageUrl || "";
-
       }
 
-      const response = await axiosInstance.put(`/travel-journal/edit/${journalId}`, {
-        title,
-        description:journal,
-        imageUrl: imageUrl || journalInfo.imageUrl,
-        visitedLocation,
-        visitedDate: visitedDate
-          ? moment(visitedDate).valueOf()
-          : moment().valueOf(),
-      });
+      const response = await axiosInstance.put(
+        `/travel-journal/edit/${mementoId}`,
+        {
+          title,
+          description: memento,
+          imageUrl: imageUrl || mementoInfo.imageUrl,
+          visitedLocation,
+          visitedDate: visitedDate
+            ? moment(visitedDate).valueOf()
+            : moment().valueOf(),
+        }
+      );
       if (response.data && response.data.result) {
-        toast.success("Journal Updated Successfully");
-        getAllTravelJournals();
+        toast.success("Memento Updated Successfully");
+        getAllMementos();
         onClose();
       }
     } catch (error: any) {
       console.error(
-        "Error updating journal:",
+        "Error updating memento:",
         error.response?.data || error.message
       );
       toast.error(
-        "Failed to update journal. Please check the input and try again."
+        "Failed to update memento. Please check the input and try again."
       );
-      onClose()
+      onClose();
     }
   };
+
   const handleAddOrUpdateClick = () => {
     if (!title) {
       setError("Please enter the title");
       return;
     }
 
-    if (!journal) {
-      setError("Please enter the journal");
+    if (!memento) {
+      setError("Please enter the memento description");
+      return;
     }
 
     setError("");
     if (type === "edit") {
-      updateTravelJournal();
+      updateMemento();
     } else {
-      addNewTravelJournal();
+      addNewMemento();
     }
   };
 
-  const handleDeleteJournalImg = async () => {
+  const handleDeleteMementoImg = async () => {
     const deleteImgRes = await axiosInstance.delete("/delete-image", {
-      params: {
-        imageUrl: journalInfo.imageUrl,
-      },
-    })
-    console.log(deleteImgRes)
-    if(deleteImgRes.data) {
-      const journalId = journalInfo._id;
+      params: { imageUrl: mementoInfo.imageUrl },
+    });
+    console.log(deleteImgRes);
+    if (deleteImgRes.data) {
+      const mementoId = mementoInfo._id;
       const postData = {
         title,
-        description:journal,
+        description: memento,
         visitedLocation,
         visitedDate: moment().valueOf(),
         imageUrl: "",
-      }
-      const response = await axiosInstance.put(`/edit/${journalId}`, postData);
-      setJournalImg(null);
+      };
+      const response = await axiosInstance.put(`/edit/${mementoId}`, postData);
+      setMementoImg(null);
     }
-
   };
 
   return (
     <div className="relative">
       <div className="flex items-center justify-between">
         <h5 className="text-xl font-medium text-slate-700">
-          {type === "add" ? "Add Journal" : "Update Journal"}
+          {type === "add" ? "Add Memento" : "Update Memento"}
         </h5>
         <div>
           <div className="flex items-center gap-3 bg-cyan-50/50 p-2 rounded-l-lg">
             {type === "add" ? (
               <button className="btn-small" onClick={handleAddOrUpdateClick}>
-                <MdAdd className="text-lg" /> ADD JOURNAL
+                <MdAdd className="text-lg" /> ADD MEMENTO
               </button>
             ) : (
               <>
                 <button className="btn-small" onClick={handleAddOrUpdateClick}>
-                  <MdUpdate className="text-lg" /> UPDATE JOURNAL
+                  <MdUpdate className="text-lg" /> UPDATE MEMENTO
                 </button>
                 <button className="btn-small btn-delete" onClick={onClose}>
                   <MdDeleteOutline className="text-lg" /> DELETE
@@ -185,19 +193,19 @@ const AddEditTravelJournal: React.FC<AddEditTravelJournalProps> = ({
           </div>
 
           <ImageSelector
-            image={journalImg}
-            setImage={setJournalImg}
-            handleDeleteImg={handleDeleteJournalImg}
+            image={mementoImg}
+            setImage={setMementoImg}
+            handleDeleteImg={handleDeleteMementoImg}
           />
 
           <div className="flex flex-col gap-2 mt-4">
-            <label className="input-label">JOURNAL</label>
+            <label className="input-label">DESCRIPTION</label>
             <textarea
               className="text-sm text-slate-950 p-2 rounded outline-none bg-slate-50"
-              placeholder="Write your journal here"
+              placeholder="Write your memento here"
               rows={8}
-              value={journal}
-              onChange={(e) => setJournal(e.target.value)}
+              value={memento}
+              onChange={(e) => setMemento(e.target.value)}
             />
           </div>
 
@@ -211,4 +219,4 @@ const AddEditTravelJournal: React.FC<AddEditTravelJournalProps> = ({
   );
 };
 
-export default AddEditTravelJournal;
+export default AddEditMemento;

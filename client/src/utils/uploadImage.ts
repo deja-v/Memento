@@ -1,6 +1,6 @@
 import axiosInstance from "./axiosinstance";
 
-const uploadImage = async (imageFile) => {
+const uploadImage = async (imageFile: File) => {
     const formData = new FormData();
     formData.append('image', imageFile);
 

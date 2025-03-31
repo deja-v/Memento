@@ -2,11 +2,11 @@ import moment from "moment";
 import {useState, useEffect} from "react";
 import { FaHeart } from "react-icons/fa";
 import { GrMapLocation } from "react-icons/gr";
-interface TravelJournalCardProps {
+interface MementoCardProps {
   imgUrl: File | string | null;
   title: string;
   date?: Date;
-  journal?: string;
+  description?: string;
   visitedLocation?: any[];
   isFavourite?: boolean;
   onFavouriteClick?: () => void;
@@ -14,11 +14,11 @@ interface TravelJournalCardProps {
   onEdit?: ()=>void;
 }
 
-const TravelJournalCard: React.FC<TravelJournalCardProps> = ({
+const MementoCard: React.FC<MementoCardProps> = ({
   imgUrl,
   title,
   date,
-  journal,
+  description,
   visitedLocation,
   isFavourite,
   onFavouriteClick,
@@ -68,7 +68,7 @@ const TravelJournalCard: React.FC<TravelJournalCardProps> = ({
           </div>
         </div>
 
-        <p className="text=xs text-slate-600 mt-2">{journal?.slice(0,60)}</p>
+        <p className="text=xs text-slate-600 mt-2">{description?.slice(0,60)}</p>
         <div className="inline-flex items-center gap-2 text-[13px] text-blue-400 bg-blue-200/40 rounded mt-3 px-2 py-1">
             <GrMapLocation className="text-sm"/>
             {visitedLocation?.length && visitedLocation.map((item,index)=>
@@ -80,4 +80,4 @@ const TravelJournalCard: React.FC<TravelJournalCardProps> = ({
   );
 };
 
-export default TravelJournalCard;
+export default MementoCard;

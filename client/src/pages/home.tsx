@@ -3,20 +3,21 @@ import { useState, useEffect } from "react";
 import Navbar from "../components/navbar";
 import axiosInstance from "../utils/axiosinstance";
 import axios from "axios";
-import TravelJournalCard from "../components/cards/travel-journal";
+import MementoCard from "../components/cards/memento";
 import { MdAdd } from "react-icons/md";
 import { ToastContainer, toast } from "react-toastify";
 import Modal from "react-modal";
 import "react-toastify/dist/ReactToastify.css";
-import AddEditTravelJournal from "../components/add-edit-travel-journal";
-import ViewTravelJournal from "../components/view-travel-journal";
+import AddEditMemento from "../components/add-edit-memento";
+import ViewMemento from "../components/view-memento";
 import EmptyCard from "../components/cards/empty-card";
 import Logo from "../assets/logo.png";
 import { DayPicker } from "react-day-picker";
 import { DateRange } from "react-day-picker";
 import moment from "moment";
 import FilterInfoTitle from "../components/cards/filter-info-title";
-export interface Journal {
+
+export interface Memento {
   _id: string;
   title: string;
   description: string;
@@ -31,7 +32,7 @@ export interface Journal {
 const Home: React.FC = () => {
   const navigate = useNavigate();
   const [userInfo, setUserInfo] = useState(null);
-  const [allJournals, setAllJournals] = useState<Journal[]>([]);
+  const [allMementos, setAllMementos] = useState<Memento[]>([]);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [filterType, setFilterType] = useState("");
@@ -48,16 +49,17 @@ const Home: React.FC = () => {
     data: null,
   });
 
-  const getEmptyCardMessage = (filterType: string) => {
-    if (filterType === "search") {
-      return "Oops! No journals found matching your search.";
-    } else if (filterType === "date") {
-      return "No journals found in the given date range";
+  const getEmptyCardMessage = (type: string) => {
+    if (type === "search") {
+      return "Oops! No mementos found matching your search.";
+    } else if (type === "date") {
+      return "No mementos found in the given date range";
     } else {
-      return "Create your Journal by clicking the 'Add' button to write down your thoughts, ideas and memories. Let's get started!";
+      return "Create your Memento by clicking the 'Add' button to write down your thoughts, ideas and memories. Let's get started!";
     }
   };
-  const getUserInfo = async () => {
+
+  const fetchUserInfo = async () => {
     try {
       const response = await axiosInstance.get("/travel-journal/get-user");
       if (response.data && response.data.user) {
@@ -74,11 +76,11 @@ const Home: React.FC = () => {
     }
   };
 
-  const getAllTravelJournals = async () => {
+  const fetchAllMementos = async () => {
     try {
       const response = await axiosInstance.get("/travel-journal/all");
       if (response.data && response.data.result) {
-        setAllJournals(response.data.result);
+        setAllMementos(response.data.result);
       }
     } catch (error: unknown) {
       if (axios.isAxiosError(error) && error.response?.status === 401) {
@@ -90,33 +92,31 @@ const Home: React.FC = () => {
     }
   };
 
-  const handleEdit = (data: any) => {
-    setOpenAddEditModal({ isOpen: true, type: "edit", data: data });
+  const handleEditMemento = (data: any) => {
+    setOpenAddEditModal({ isOpen: true, type: "edit", data });
   };
 
-  const handleViewJournal = (data: any) => {
+  const handleViewMemento = (data: any) => {
     setOpenViewModal({ isOpen: true, data });
   };
 
-  const updateIsFavourite = async (journalData: any) => {
-    const journalId = journalData._id;
+  const toggleFavouriteMemento = async (mementoData: any) => {
+    const mementoId = mementoData._id;
     try {
       const response = await axiosInstance.put(
-        `/travel-journal/update-favourite/${journalId}`,
-        {
-          isFavourite: !journalData.isFavourite,
-        }
+        `/travel-journal/update-favourite/${mementoId}`,
+        { isFavourite: !mementoData.isFavourite }
       );
       if (response.data && response.data.journal) {
-        if (journalData.isFavourite) toast.success("Removed from favourites");
+        if (mementoData.isFavourite) toast.success("Removed from favourites");
         else toast.success("Added to favourites");
 
         if (filterType === "search" && searchQuery) {
-          onSearchJournal(searchQuery);
+          searchMemento(searchQuery);
         } else if (filterType === "date") {
-          filterJournalsByDate(dateRange!);
+          filterMementosByDate(dateRange!);
         } else {
-          getAllTravelJournals();
+          fetchAllMementos();
         }
       }
     } catch (error: unknown) {
@@ -129,77 +129,73 @@ const Home: React.FC = () => {
     }
   };
 
-  const deleteTravelJournal = async (data: Journal | null) => {
-    const journalId = data?._id;
-
+  const deleteMemento = async (data: Memento | null) => {
+    const mementoId = data?._id;
     try {
       const response = await axiosInstance.delete(
-        `/travel-journal/delete/${journalId}`
+        `/travel-journal/delete/${mementoId}`
       );
       if (response.data && !response.data.error) {
-        toast.success("Journal Deleted Successfully");
-        setOpenViewModal((prevState) => ({ ...prevState, isOpen: false }));
-        getAllTravelJournals();
+        toast.success("Memento Deleted Successfully");
+        setOpenViewModal((prev) => ({ ...prev, isOpen: false }));
+        fetchAllMementos();
       }
     } catch (error: any) {
-      console.log("An error occured ", error);
+      console.log("An error occurred ", error);
     }
   };
 
-  const onSearchJournal = async (query: string) => {
+  const searchMemento = async (query: string) => {
     try {
-      const response = await axiosInstance.get(`/travel-journal/search/`, {
-        params: {
-          query,
-        },
+      const response = await axiosInstance.get("/travel-journal/search/", {
+        params: { query },
       });
-
       if (response.data && response.data.journals) {
         setFilterType("search");
-        setAllJournals(response.data.journals);
+        setAllMementos(response.data.journals);
       }
     } catch (error: any) {
-      console.log("An error occured ", error);
+      console.log("An error occurred ", error);
     }
   };
 
-  const handleClearSearch = () => {
+  const clearSearch = () => {
     setFilterType("");
-    getAllTravelJournals();
+    fetchAllMementos();
   };
 
-  const filterJournalsByDate = async (day: DateRange) => {
+  const filterMementosByDate = async (range: DateRange) => {
     try {
-      const startDate = day.from ? moment(day.from).valueOf() : null;
-      const endDate = day.to ? moment(day.to).valueOf() : null;
+      const startDate = range.from ? moment(range.from).valueOf() : null;
+      const endDate = range.to ? moment(range.to).valueOf() : null;
       if (startDate && endDate) {
         const response = await axiosInstance.get("/travel-journal/filter", {
           params: { startDate, endDate },
         });
         if (response.data && response.data.journals) {
           setFilterType("date");
-          setAllJournals(response.data.journals);
+          setAllMementos(response.data.journals);
         }
       }
     } catch (error: any) {
-      console.log("An error occured ", error);
+      console.log("An error occurred ", error);
     }
   };
 
-  const handleDayClick = (day: DateRange) => {
-    setDateRange(day);
-    filterJournalsByDate(day);
+  const onDaySelect = (range: DateRange) => {
+    setDateRange(range);
+    filterMementosByDate(range);
   };
 
   const resetFilter = () => {
     setDateRange(undefined);
     setFilterType("");
-    getAllTravelJournals();
+    fetchAllMementos();
   };
 
   useEffect(() => {
-    getUserInfo();
-    getAllTravelJournals();
+    fetchUserInfo();
+    fetchAllMementos();
   }, []);
 
   return (
@@ -209,43 +205,38 @@ const Home: React.FC = () => {
           userInfo={userInfo}
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
-          onSearchNote={onSearchJournal}
-          handleClearSearch={handleClearSearch}
+          onSearchNote={searchMemento}
+          handleClearSearch={clearSearch}
         />
 
         <div className="w-full p-10">
           <FilterInfoTitle
             filterType={filterType}
             filterDates={dateRange}
-            onClear={() => {
-              resetFilter();
-            }}
+            onClear={resetFilter}
           />
 
           <div className="flex gap-7">
             <div className="flex-1">
-              {allJournals.length > 0 ? (
+              {allMementos.length > 0 ? (
                 <div className="grid grid-cols-2 gap-4">
-                  {allJournals.map((item) => (
-                    <TravelJournalCard
+                  {allMementos.map((item) => (
+                    <MementoCard
                       key={item._id}
                       imgUrl={item.imageUrl}
                       title={item.title}
-                      journal={item.description}
+                      description={item.description}
                       date={item.visitedDate}
                       visitedLocation={item.visitedLocation}
                       isFavourite={item.isFavourite}
-                      onEdit={() => handleEdit(item)}
-                      onClick={() => handleViewJournal(item)}
-                      onFavouriteClick={() => updateIsFavourite(item)}
+                      onEdit={() => handleEditMemento(item)}
+                      onClick={() => handleViewMemento(item)}
+                      onFavouriteClick={() => toggleFavouriteMemento(item)}
                     />
                   ))}
                 </div>
               ) : (
-                <EmptyCard
-                  imgSrc={Logo}
-                  message={getEmptyCardMessage(filterType)}
-                />
+                <EmptyCard imgSrc={Logo} message={getEmptyCardMessage(filterType)} />
               )}
             </div>
             <div className="w-[320px]">
@@ -256,7 +247,7 @@ const Home: React.FC = () => {
                     mode="range"
                     required
                     selected={dateRange}
-                    onSelect={handleDayClick}
+                    onSelect={onDaySelect}
                     pagedNavigation
                   />
                 </div>
@@ -270,21 +261,18 @@ const Home: React.FC = () => {
         isOpen={openAddEditModal.isOpen}
         onRequestClose={() => {}}
         style={{
-          overlay: {
-            backgroundColor: "rgba(0,0,0,0,2)",
-            zIndex: 999,
-          },
+          overlay: { backgroundColor: "rgba(0,0,0,0,2)", zIndex: 999 },
         }}
         appElement={document.getElementById("root") as HTMLElement}
         className="model-box"
       >
-        <AddEditTravelJournal
+        <AddEditMemento
           type={openAddEditModal.type}
-          journalInfo={openAddEditModal.data}
-          onClose={() => {
-            setOpenAddEditModal({ isOpen: false, type: "add", data: null });
-          }}
-          getAllTravelJournals={getAllTravelJournals}
+          mementoInfo={openAddEditModal.data}
+          onClose={() =>
+            setOpenAddEditModal({ isOpen: false, type: "add", data: null })
+          }
+          getAllMementos={fetchAllMementos}
         />
       </Modal>
 
@@ -292,34 +280,29 @@ const Home: React.FC = () => {
         isOpen={openViewModal.isOpen}
         onRequestClose={() => {}}
         style={{
-          overlay: {
-            backgroundColor: "rgba(0,0,0,0,2)",
-            zIndex: 999,
-          },
+          overlay: { backgroundColor: "rgba(0,0,0,0,2)", zIndex: 999 },
         }}
         appElement={document.getElementById("root") as HTMLElement}
         className="model-box"
       >
-        <ViewTravelJournal
-          journalInfo={openViewModal.data || null}
-          onClose={() => {
-            setOpenViewModal((prevState) => ({ ...prevState, isOpen: false }));
-          }}
+        <ViewMemento
+          mementoInfo={openViewModal.data || null}
+          onClose={() =>
+            setOpenViewModal((prev) => ({ ...prev, isOpen: false }))
+          }
           onEditClick={() => {
-            setOpenViewModal((prevState) => ({ ...prevState, isOpen: false }));
-            handleEdit(openViewModal.data || null);
+            setOpenViewModal((prev) => ({ ...prev, isOpen: false }));
+            handleEditMemento(openViewModal.data || null);
           }}
-          onDeleteClick={() => {
-            deleteTravelJournal(openViewModal.data || null);
-          }}
+          onDeleteClick={() => deleteMemento(openViewModal.data || null)}
         />
       </Modal>
 
       <button
         className="w-16 h-16 flex items-center justify-center rounded-full btn-primary fixed right-10 bottom-10"
-        onClick={() => {
-          setOpenAddEditModal({ isOpen: true, type: "add", data: null });
-        }}
+        onClick={() =>
+          setOpenAddEditModal({ isOpen: true, type: "add", data: null })
+        }
       >
         <MdAdd className="text-[32px] text-white" />
       </button>

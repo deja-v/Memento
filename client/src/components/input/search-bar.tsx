@@ -1,6 +1,14 @@
 import { FaMagnifyingGlass } from "react-icons/fa6";
 import { IoMdClose } from "react-icons/io";
-const SearchBar = ({value, onChange, handleSearch, onClearSearch}) => {
+
+interface SearchBarProps {
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleSearch: () => void;
+  onClearSearch: () => void;
+}
+
+const SearchBar: React.FC<SearchBarProps> = ({value, onChange, handleSearch, onClearSearch}) => {
   return (
     <div className="w-80 flex items-center px-4 bg-slate-100 rounded-md">
       <input

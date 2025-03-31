@@ -39,7 +39,7 @@ const TagInput: React.FC<TagInputProps> = ({ tags, setTags }) => {
           {tags.map((tag, index) => (
             <span
               key={index}
-              className="flex items-center gap-2 text-sm text-cyan-600 bg-cyan-200/40 px-3 py-1 rounded"
+              className="flex items-center gap-2 text-sm text-blue-400 bg-blue-200/40 px-3 py-1 rounded"
             >
               <GrMapLocation className="text-sm" /> {tag}
               <button onClick={() => handleRemoveTag(tag)}>
@@ -59,10 +59,10 @@ const TagInput: React.FC<TagInputProps> = ({ tags, setTags }) => {
           onKeyDown={handleKeyDown}
         />
         <button
-          className="group w-8 h-8 flex items-center justify-center cursor-pointer rounded border border-cyan-500 hover:border-cyan-500 hover:bg-cyan-500"
+          className="group w-8 h-8 flex items-center justify-center cursor-pointer rounded border border-blue-400 hover:border-blue-500 hover:bg-blue-500"
           onClick={addNewTag}
         >
-          <MdAdd className="text-2xl text-cyan-500 group-hover:text-white" />
+          <MdAdd className="text-2xl text-blue-400 group-hover:text-white" />
         </button>
       </div>
     </div>
