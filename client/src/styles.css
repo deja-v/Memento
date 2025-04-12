@@ -5,11 +5,26 @@
 
 
 .rdp-root {
-  --rdp-accent-color: #01b0cb;
-  --rdp-accent-background-color: #dffbff;
-  --rdp-day_button-border-radius: 8px;
-  --rdp-selected-font: bold medium var(--rdp-font-family);
+  --rdp-accent-color: #01b0cb !important;
+  --rdp-accent-background-color: #dffbff !important;
+  --rdp-day_button-border-radius: 8px !important;
+  --rdp-selected-font: bold medium var(--rdp-font-family) !important;
 }
+
+.rdp-day_selected {
+  @apply bg-blue-400 text-white font-bold;
+  border-radius: 50% !important;
+  width: 2.5rem !important;      
+  height: 2.5rem !important;     
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.rdp-day:hover:not(.rdp-day_selected) {
+  border-radius: 50% !important;
+}
+
 @layer base {
   html {
     font-family: "Poppins", "sans-serif";
@@ -49,7 +64,7 @@
   }
 
   .btn-small {
-    @apply flex items-center gap-1 text-xs font-medium bg-cyan-50 text-blue-400 shadow-cyan-100/0 border border-cyan-100 hover:bg-blue-400 hover:text-white rounded px-3 py-[3px] cursor-pointer;
+    @apply flex items-center gap-1 text-xs font-medium bg-blue-50 text-blue-400 shadow-cyan-100/0 border border-blue-100 hover:bg-blue-400 hover:text-white rounded px-3 py-[3px] cursor-pointer;
   }
   .btn-delete {
     @apply bg-rose-50 text-rose-500 shadow-rose-100/0 border border-rose-100 hover:bg-rose-500 hover:text-white;

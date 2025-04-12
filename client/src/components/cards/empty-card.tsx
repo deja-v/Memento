@@ -1,4 +1,11 @@
-const EmptyCard = ({imgSrc, message}) => {
+import React from 'react'
+
+interface EmptyCardProps {
+  imgSrc: string;
+  message: string;
+}
+
+const EmptyCard:React.FC<EmptyCardProps> = ({imgSrc, message}) => {
   return (
     <div className="flex flex-col items-center justify-center mt-20">
         <img src={imgSrc} alt="No notes" className="w-24" />

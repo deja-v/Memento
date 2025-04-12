@@ -58,7 +58,7 @@ const SignUp = () => {
         <div className="w-2/4 h-[90vh] flex items-center bg-login-bg-img bg-cover bg-center rounded-lg p-10 z-50">
           <div>
             <h4 className="text-5xl text-zinc-800 font-semibold leading-[58px]">
-              Join the <br /> Adventure
+            Embrace Every <br /> Memory
             </h4>
             <p className="text-[15px] text-zinc-500 leading-6 pr-7 mt-4">
               Create an account and Start preserving your memories.

@@ -1,14 +1,14 @@
 import { Router } from "express";
 import {
   handleGetUser,
-  handleAddTravelJournal,
-  handleGetAllTravelJournal,
-  handleEditTravelJournal,
-  handleDeleteTravelJournal,
+  handleAddMemento,
+  handleGetAllMemento,
+  handleEditMemento,
+  handleDeleteMemento,
   handleUpdateIsFavourite,
   handleSearch,
   handleFilter
-} from "../controllers/travel-journal.js";
+} from "../controllers/memento.js";
 
 const router = Router();
 
@@ -17,19 +17,19 @@ router.get("/get-user", (req,res)=>{
 })
 
 router.post("/add", (req, res) => {
-  handleAddTravelJournal(req, res);
+  handleAddMemento(req, res);
 });
 
 router.get("/all", (req, res) => {
-  handleGetAllTravelJournal(req, res);
+  handleGetAllMemento(req, res);
 });
 
 router.put("/edit/:id", (req,res)=>{
-  handleEditTravelJournal(req,res);
+  handleEditMemento(req,res);
 })
 
 router.delete("/delete/:id", (req,res)=>{
-  handleDeleteTravelJournal(req,res);
+  handleDeleteMemento(req,res);
 })
 
 router.put("/update-favourite/:id", (req,res)=>{

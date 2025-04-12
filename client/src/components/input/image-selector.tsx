@@ -59,8 +59,8 @@ const ImageSelector: React.FC<ImageSelectorProps> = ({ image, setImage, handleDe
           className="w-full h-[220px] cursor-pointer flex flex-col items-center justify-center gap-4 bg-slate-50 rounded border border-slate-200/50"
           onClick={onChooseFile}
         >
-          <div className="w-14 h-14 flex items-center justify-center bg-cyan-50 rounded-full border border-cyan-100">
-            <FaRegFileImage className="text-xl text-cyan-500" />
+          <div className="w-14 h-14 flex items-center justify-center bg-blue-50 rounded-full border border-cyan-100">
+            <FaRegFileImage className="text-xl text-blue-400" />
           </div>
           <p className="text-sm text-slate-500">Browse Image Files to Upload</p>
         </button>

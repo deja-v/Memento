@@ -40,12 +40,12 @@ const Navbar: React.FC<NavbarProps> = ({
   return (
     <div className="bg-white flex items-center justify-between px-6 py-2 drop-shadow sticky top-0 z-10">
       <div className="flex items-center gap-1">
-        <img src={logo} alt="Travel Journal" className="h-12" />
+        <img src={logo} alt="Memento" className="h-12" />
         <h6
-          style={{ fontFamily: '"Akaya Kanadaka", system-ui' }}
-          className="font-semibold text-zinc-500"
+          // style={{ fontFamily: '"Akaya Kanadaka", system-ui' }}
+          className="font-semibold text-zinc-800"
         >
-          Travel Journal
+          Mementos
         </h6>
       </div>
       {isToken && (

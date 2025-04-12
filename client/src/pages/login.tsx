@@ -28,7 +28,7 @@ const Login = () => {
         email: email,
         password: password,
       });
-      console.log(response.data)
+      console.log(response.data);
       if (response.data && response.data.accessToken) {
         localStorage.setItem("token", response.data.accessToken);
         navigate("/dashboard");
@@ -54,11 +54,11 @@ const Login = () => {
         <div className="w-2/4 h-[90vh] flex items-center bg-login-bg-img bg-cover bg-center rounded-lg p-10 z-50">
           <div>
             <h4 className="text-5xl text-zinc-800 font-semibold leading-[58px]">
-              Capture Your <br /> Journeys
+              Preserve Your <br /> Memories
             </h4>
             <p className="text-[15px] text-zinc-500 leading-6 pr-7 mt-4">
-              Record your travel experiences and memories in your personal
-              Travel Journal.
+              Save every moment—from exciting journeys to everyday wonders—with
+              Memento.
             </p>
           </div>
         </div>

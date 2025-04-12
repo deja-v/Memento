@@ -1,6 +1,6 @@
 import {Schema, model} from "mongoose";
 
-const travelJournalSchema = new Schema(
+const mementoSchema = new Schema(
     {
         title:{
             type: String,
@@ -38,4 +38,4 @@ const travelJournalSchema = new Schema(
     },{timestamps: true}
 )
 
-export const TravelJournal = model("TravelJournal", travelJournalSchema);
+export const Memento = model("Memento", mementoSchema);
