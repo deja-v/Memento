@@ -1,8 +1,11 @@
 import React from "react";
-import { MdClose, MdEdit, MdDelete } from "react-icons/md";
+import { MdAdd, MdClose, MdDeleteOutline, MdUpdate } from "react-icons/md";
+import moment from "moment";
+import { GrMapLocation } from "react-icons/gr";
+import { Memento } from "../pages/home";
 
 interface ViewMementoProps {
-  mementoInfo: any;
+  mementoInfo: Memento | null;
   onClose: () => void;
   onEditClick: () => void;
   onDeleteClick: () => void;
@@ -15,40 +18,58 @@ const ViewMemento: React.FC<ViewMementoProps> = ({
   onDeleteClick,
 }) => {
   return (
-    <div className="p-4">
-      <div className="flex justify-end">
-        <button onClick={onClose}>
-          <MdClose className="text-2xl text-gray-500" />
-        </button>
+    <div className="relative">
+      <div className="flex items-center justify-end">
+        <div>
+          <div className="flex items-center gap-3 p-2 rounded-l-lg">
+            <button className="btn-small" onClick={onEditClick}>
+              <MdUpdate className="text-lg" /> UPDATE MEMENTO
+            </button>
+
+            <button className="btn-small btn-delete" onClick={onDeleteClick}>
+              <MdDeleteOutline className="text-lg" /> Delete
+            </button>
+
+            <button className="cursor-pointer" onClick={onClose}>
+              <MdClose className="text-xl text-slate-400" />
+            </button>
+          </div>
+        </div>
       </div>
+
       <div>
-        <h2 className="text-2xl font-bold">{mementoInfo.title}</h2>
-        {mementoInfo.imageUrl && (
+        <div className="flex-1 flex flex-col gap-2 py-4">
+          <h1 className="text-2xl text-slate-950">{mementoInfo?.title}</h1>
+
+          <div className="flex items-center justify-between gap-3">
+            <span className="text-xs text-slate-500">
+              {mementoInfo && moment(mementoInfo.visitedDate).format("Do MMM YYYY")}
+            </span>
+            <div className="inline-flex items-center gap-2 text-[13px] text-cyan-600 bg-cyan-200/40 rounded px-2 py-1">
+              <GrMapLocation className="text-sm" />
+              {mementoInfo &&
+                mementoInfo.visitedLocation.map((item, index) =>
+                  mementoInfo.visitedLocation.length === index + 1
+                    ? `${item}`
+                    : `${item}, `
+                )}
+            </div>
+          </div>
+        </div>
+
+        {mementoInfo?.imageUrl && typeof mementoInfo.imageUrl === "string" && (
           <img
-            src={
-              typeof mementoInfo.imageUrl === "string"
-                ? mementoInfo.imageUrl
-                : ""
-            }
-            alt="Memento"
-            className="w-full h-auto mt-4"
+            src={mementoInfo.imageUrl}
+            alt="Selected"
+            className="w-full h-[300px] object-cover rounded-lg"
           />
         )}
-        <p className="mt-4">{mementoInfo.description}</p>
-        <p className="mt-2 text-sm text-gray-600">
-          Visited on: {new Date(mementoInfo.visitedDate).toLocaleDateString()}
-        </p>
-        <p className="mt-2 text-sm text-gray-600">
-          Location: {mementoInfo.visitedLocation?.join(", ")}
-        </p>
-      </div>
-      <div className="mt-4 flex gap-4">
-        <button className="btn-primary" onClick={onEditClick}>
-          <MdEdit className="mr-2" /> Edit Memento
-        </button>
-        <button className="btn-danger" onClick={onDeleteClick}>
-          <MdDelete className="mr-2" /> Delete Memento
-        </button>
+
+        <div className="mt-4">
+          <p className="text-sm text-slate-950 leading-6 text-justify whitespace-pre-line">
+            {mementoInfo?.description}
+          </p>
+        </div>
       </div>
     </div>
   );

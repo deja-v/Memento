@@ -39,7 +39,7 @@ const TagInput: React.FC<TagInputProps> = ({ tags, setTags }) => {
           {tags.map((tag, index) => (
             <span
               key={index}
-              className="flex items-center gap-2 text-sm text-blue-400 bg-blue-200/40 px-3 py-1 rounded"
+              className="flex items-center gap-2 text-sm text-cyan-600 bg-cyan-200/40 px-3 py-1 rounded"
             >
               <GrMapLocation className="text-sm" /> {tag}
               <button onClick={() => handleRemoveTag(tag)}>

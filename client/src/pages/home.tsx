@@ -61,7 +61,7 @@ const Home: React.FC = () => {
 
   const fetchUserInfo = async () => {
     try {
-      const response = await axiosInstance.get("/travel-journal/get-user");
+      const response = await axiosInstance.get("/memento/get-user");
       if (response.data && response.data.user) {
         setUserInfo(response.data.user);
       }
@@ -78,7 +78,7 @@ const Home: React.FC = () => {
 
   const fetchAllMementos = async () => {
     try {
-      const response = await axiosInstance.get("/travel-journal/all");
+      const response = await axiosInstance.get("/memento/all");
       if (response.data && response.data.result) {
         setAllMementos(response.data.result);
       }
@@ -104,10 +104,10 @@ const Home: React.FC = () => {
     const mementoId = mementoData._id;
     try {
       const response = await axiosInstance.put(
-        `/travel-journal/update-favourite/${mementoId}`,
+        `/memento/update-favourite/${mementoId}`,
         { isFavourite: !mementoData.isFavourite }
       );
-      if (response.data && response.data.journal) {
+      if (response.data && response.data.memento) {
         if (mementoData.isFavourite) toast.success("Removed from favourites");
         else toast.success("Added to favourites");
 
@@ -133,7 +133,7 @@ const Home: React.FC = () => {
     const mementoId = data?._id;
     try {
       const response = await axiosInstance.delete(
-        `/travel-journal/delete/${mementoId}`
+        `/memento/delete/${mementoId}`
       );
       if (response.data && !response.data.error) {
         toast.success("Memento Deleted Successfully");
@@ -147,12 +147,12 @@ const Home: React.FC = () => {
 
   const searchMemento = async (query: string) => {
     try {
-      const response = await axiosInstance.get("/travel-journal/search/", {
+      const response = await axiosInstance.get("/memento/search/", {
         params: { query },
       });
-      if (response.data && response.data.journals) {
+      if (response.data && response.data.mementos) {
         setFilterType("search");
-        setAllMementos(response.data.journals);
+        setAllMementos(response.data.mementos);
       }
     } catch (error: any) {
       console.log("An error occurred ", error);
@@ -169,12 +169,12 @@ const Home: React.FC = () => {
       const startDate = range.from ? moment(range.from).valueOf() : null;
       const endDate = range.to ? moment(range.to).valueOf() : null;
       if (startDate && endDate) {
-        const response = await axiosInstance.get("/travel-journal/filter", {
+        const response = await axiosInstance.get("/memento/filter", {
           params: { startDate, endDate },
         });
-        if (response.data && response.data.journals) {
+        if (response.data && response.data.mementos) {
           setFilterType("date");
-          setAllMementos(response.data.journals);
+          setAllMementos(response.data.mementos);
         }
       }
     } catch (error: any) {

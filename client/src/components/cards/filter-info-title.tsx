@@ -46,7 +46,7 @@ const FilterInfoTitle: React.FC<FilterInfoProps> = ({
           <h3 className="text-lg font-medium">Search Results</h3>
         ) : (
           <div className="flex items-center gap-2">
-            <h3 className="text-lg font-medium">Travel Journals from</h3>
+            <h3 className="text-lg font-medium">Mementos from</h3>
             <DateRangeChip date={filterDates} />
           </div>
         )}

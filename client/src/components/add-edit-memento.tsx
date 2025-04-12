@@ -26,7 +26,7 @@ const AddEditMemento: React.FC<AddEditMementoProps> = ({
   );
   const [title, setTitle] = useState(mementoInfo?.title || "");
   const [memento, setMemento] = useState(mementoInfo?.description || "");
-  const [mementoImg, setMementoImg] = useState<File | null>(
+  const [mementoImg, setMementoImg] = useState<File | string | null>(
     mementoInfo?.imageUrl || null
   );
   const [visitedLocation, setVisitedLocation] = useState<any[]>(
@@ -43,7 +43,7 @@ const AddEditMemento: React.FC<AddEditMementoProps> = ({
         imageUrl = imgUploadRes.imageUrl || "";
       }
 
-      const response = await axiosInstance.post("/travel-journal/add", {
+      const response = await axiosInstance.post("/memento/add", {
         title,
         description: memento,
         imageUrl: imageUrl || "",
@@ -73,13 +73,13 @@ const AddEditMemento: React.FC<AddEditMementoProps> = ({
     try {
       let imageUrl = "";
 
-      if (typeof mementoImg === "object") {
+      if (mementoImg) {
         const imgUploadRes = await uploadImage(mementoImg);
         imageUrl = imgUploadRes.imageUrl || "";
       }
-
+      
       const response = await axiosInstance.put(
-        `/travel-journal/edit/${mementoId}`,
+        `/memento/edit/${mementoId}`,
         {
           title,
           description: memento,
@@ -130,7 +130,6 @@ const AddEditMemento: React.FC<AddEditMementoProps> = ({
     const deleteImgRes = await axiosInstance.delete("/delete-image", {
       params: { imageUrl: mementoInfo.imageUrl },
     });
-    console.log(deleteImgRes);
     if (deleteImgRes.data) {
       const mementoId = mementoInfo._id;
       const postData = {
@@ -152,7 +151,7 @@ const AddEditMemento: React.FC<AddEditMementoProps> = ({
           {type === "add" ? "Add Memento" : "Update Memento"}
         </h5>
         <div>
-          <div className="flex items-center gap-3 bg-cyan-50/50 p-2 rounded-l-lg">
+          <div className="flex items-center gap-3 p-2 rounded-l-lg">
             {type === "add" ? (
               <button className="btn-small" onClick={handleAddOrUpdateClick}>
                 <MdAdd className="text-lg" /> ADD MEMENTO

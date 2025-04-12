@@ -4,7 +4,7 @@ import cors from "cors";
 import express from "express";
 import mongoose from "mongoose";
 import userRouter from "./routes/user.js";
-import travelJournalRouter from "./routes/travel-journal.js";
+import mementoRouter from "./routes/memento.js";
 import auth from "./middlewares/auth.js";
 import path from "path";
 import upload from "./utils/multer.js"
@@ -87,7 +87,7 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/assets", express.static(path.join(__dirname, "assets")));
 
 app.use("/user", userRouter);
-app.use("/travel-journal", auth, travelJournalRouter);
+app.use("/memento", auth, mementoRouter);
 
 app.listen(PORT, () => {
   console.log(`Server is running on ${PORT}`);
