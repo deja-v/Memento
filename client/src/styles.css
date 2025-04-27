@@ -2,8 +2,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Akaya+Kanadaka&display=swap');
 @import "tailwindcss";
 
-
-
 .rdp-root {
   --rdp-accent-color: #01b0cb !important;
   --rdp-accent-background-color: #dffbff !important;

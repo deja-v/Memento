@@ -7,8 +7,17 @@ import userRouter from "./routes/user.js";
 import mementoRouter from "./routes/memento.js";
 import auth from "./middlewares/auth.js";
 import path from "path";
-import upload from "./utils/multer.js"
+import upload from "./utils/multer.js";
 import fs from "fs";
+
+import { v2 as cloudinary } from "cloudinary";
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
 const __dirname = path.resolve();
 
 const app = express();
@@ -43,45 +52,54 @@ app.use(
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-app.post("/image-upload",upload.single("image"), async (req,res)=>{
+app.post("/image-upload", upload.single("image"), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ msg: "Please provide an image" });
     }
-    const imageUrl = `http://localhost:3000/uploads/${req.file.filename}`;
-    res.status(201).json({ imageUrl });
+
+    const result = await cloudinary.uploader.upload(req.file.path, {
+      folder: "travel-journal",
+    });
+
+    fs.unlink(req.file.path, (err) => {
+      if (err && err.code !== 'ENOENT') {
+        console.error('Error deleting temp file:', err);
+      }
+    });
+
+    return res.status(201).json({
+      imageUrl: result.secure_url,
+      public_id: result.public_id,
+    });
   } catch (error) {
-    res.status(500).json({ error: true, msg: error.message });
+    console.error("Error uploading image:", error);
+    return res.status(500).json({ error: true, msg: error.message });
   }
 });
 
 app.delete("/delete-image", async (req, res) => {
-  const { imageUrl } = req.query;
-  console.log(req.query)
-  if (!imageUrl) {
-    return res
-    .status(400)
-    .json({ error: true, msg: "imageUrl Parameter is required" });
+  const { public_id } = req.query;
+
+  if (!public_id) {
+    return res.status(400).json({
+      error: true,
+      msg: "public_id parameter is required",
+    });
   }
-  
-  try{
-    const filename = path.basename(imageUrl);
-    const filePath = path.join(__dirname, "uploads", filename);
-    
-    if(fs.existsSync(filePath)){
-      fs.unlinkSync(filePath);
-      res.status(200).json({msg: "Image deleted successfully"});
+
+  try {
+    const result = await cloudinary.uploader.destroy(String(public_id));
+    if (result.result === "ok") {
+      return res.status(200).json({ msg: "Image deleted successfully" });
     }
-    else{
-      res.status(404).json({error: true, msg: "Image not found"});
-    }
-    
-  }
-  catch(error){
-    console.log(error.message);
-    res.status(500).json({error: true, msg: error.message});
+    return res.status(404).json({ error: true, msg: "Image not found or already deleted" });
+  } catch (error) {
+    console.error("Error deleting image:", error.message);
+    return res.status(500).json({ error: true, msg: error.message });
   }
 });
+
 
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/assets", express.static(path.join(__dirname, "assets")));

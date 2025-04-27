@@ -32,6 +32,9 @@ const AddEditMemento: React.FC<AddEditMementoProps> = ({
   const [visitedLocation, setVisitedLocation] = useState<any[]>(
     mementoInfo?.visitedLocation || []
   );
+  const [publicId, setPublicId] = useState<string | null>(
+    mementoInfo?.public_id || null
+  );
   const [error, setError] = useState<string>("");
 
   const addNewMemento = async () => {
@@ -72,10 +75,13 @@ const AddEditMemento: React.FC<AddEditMementoProps> = ({
     const mementoId = mementoInfo._id;
     try {
       let imageUrl = "";
+      let updatedPublicId = publicId;
 
-      if (mementoImg) {
+      // If a new file is selected, re-upload and update both values
+      if (mementoImg && mementoImg instanceof File) {
         const imgUploadRes = await uploadImage(mementoImg);
-        imageUrl = imgUploadRes.imageUrl || "";
+        imageUrl = imgUploadRes.imageUrl || imageUrl;
+        updatedPublicId = imgUploadRes.public_id || updatedPublicId;
       }
       
       const response = await axiosInstance.put(
@@ -128,7 +134,7 @@ const AddEditMemento: React.FC<AddEditMementoProps> = ({
 
   const handleDeleteMementoImg = async () => {
     const deleteImgRes = await axiosInstance.delete("/delete-image", {
-      params: { imageUrl: mementoInfo.imageUrl },
+      params: { public_id: publicId },
     });
     if (deleteImgRes.data) {
       const mementoId = mementoInfo._id;
@@ -138,6 +144,7 @@ const AddEditMemento: React.FC<AddEditMementoProps> = ({
         visitedLocation,
         visitedDate: moment().valueOf(),
         imageUrl: "",
+        public_id: null,
       };
       const response = await axiosInstance.put(`/edit/${mementoId}`, postData);
       setMementoImg(null);

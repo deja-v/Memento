@@ -34,7 +34,11 @@ const mementoSchema = new Schema(
         visitedDate:{
             type: Date,
             required: true
-        }
+        },
+        public_id: {
+            type: String,
+            default: null
+        },
     },{timestamps: true}
 )
 
