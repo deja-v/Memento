@@ -34,7 +34,10 @@ async function connectDB() {
 
 connectDB();
 
-const allowedOrigins = ["http://localhost:5173"];
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://memento-pied.vercel.app",
+];
 
 app.use(
   cors({
@@ -63,8 +66,8 @@ app.post("/image-upload", upload.single("image"), async (req, res) => {
     });
 
     fs.unlink(req.file.path, (err) => {
-      if (err && err.code !== 'ENOENT') {
-        console.error('Error deleting temp file:', err);
+      if (err && err.code !== "ENOENT") {
+        console.error("Error deleting temp file:", err);
       }
     });
 
@@ -93,13 +96,14 @@ app.delete("/delete-image", async (req, res) => {
     if (result.result === "ok") {
       return res.status(200).json({ msg: "Image deleted successfully" });
     }
-    return res.status(404).json({ error: true, msg: "Image not found or already deleted" });
+    return res
+      .status(404)
+      .json({ error: true, msg: "Image not found or already deleted" });
   } catch (error) {
     console.error("Error deleting image:", error.message);
     return res.status(500).json({ error: true, msg: error.message });
   }
 });
-
 
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/assets", express.static(path.join(__dirname, "assets")));
