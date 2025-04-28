@@ -32,7 +32,7 @@ const AddEditMemento: React.FC<AddEditMementoProps> = ({
   const [visitedLocation, setVisitedLocation] = useState<any[]>(
     mementoInfo?.visitedLocation || []
   );
-  const [publicId, setPublicId] = useState<string | null>(
+  const [publicId] = useState<string | null>(
     mementoInfo?.public_id || null
   );
   const [error, setError] = useState<string>("");
@@ -146,7 +146,7 @@ const AddEditMemento: React.FC<AddEditMementoProps> = ({
         imageUrl: "",
         public_id: null,
       };
-      const response = await axiosInstance.put(`/edit/${mementoId}`, postData);
+      await axiosInstance.put(`/edit/${mementoId}`, postData);
       setMementoImg(null);
     }
   };

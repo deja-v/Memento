@@ -1,5 +1,5 @@
 import React from "react";
-import { MdAdd, MdClose, MdDeleteOutline, MdUpdate } from "react-icons/md";
+import { MdClose, MdDeleteOutline, MdUpdate } from "react-icons/md";
 import moment from "moment";
 import { GrMapLocation } from "react-icons/gr";
 import { Memento } from "../pages/home";
