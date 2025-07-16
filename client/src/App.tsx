@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Home from "./pages/home.tsx";
 import Login from "./pages/login.tsx";
 import SignUp from "./pages/sign-up.tsx";
+
 const App = () => {
   return (
     <div>

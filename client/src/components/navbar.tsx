@@ -38,18 +38,18 @@ const Navbar: React.FC<NavbarProps> = ({
   };
 
   return (
-    <div className="bg-white flex items-center justify-between px-6 py-2 drop-shadow sticky top-0 z-10">
-      <div className="flex items-center gap-1">
-        <img src={logo} alt="Memento" className="h-12" />
-        <h6
-          // style={{ fontFamily: '"Akaya Kanadaka", system-ui' }}
-          className="font-semibold text-zinc-800"
-        >
+    <div className="glass-effect flex items-center justify-between px-8 py-4 sticky top-0 z-10 backdrop-blur-md">
+      <div className="flex items-center gap-3">
+        <div className="relative">
+          <img src={logo} alt="Memento" className="h-12 w-12 object-contain" />
+          <div className="absolute -inset-1 bg-gradient-to-r from-blue-400 to-cyan-400 rounded-full opacity-20 blur-sm"></div>
+        </div>
+        <h1 className="font-bold text-2xl bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
           Mementos
-        </h6>
+        </h1>
       </div>
       {isToken && (
-        <>
+        <div className="flex items-center gap-6">
           <SearchBar
             value={searchQuery}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
@@ -59,7 +59,7 @@ const Navbar: React.FC<NavbarProps> = ({
             onClearSearch={onClearSearch}
           />
           <ProfileInfo userInfo={userInfo} onLogout={onLogout} />
-        </>
+        </div>
       )}
     </div>
   );

@@ -200,7 +200,7 @@ const Home: React.FC = () => {
 
   return (
     <>
-      <div>
+      <div className="min-h-screen">
         <Navbar
           userInfo={userInfo}
           searchQuery={searchQuery}
@@ -209,17 +209,17 @@ const Home: React.FC = () => {
           handleClearSearch={clearSearch}
         />
 
-        <div className="w-full p-10">
+        <div className="w-full p-8 lg:p-12">
           <FilterInfoTitle
             filterType={filterType}
             filterDates={dateRange}
             onClear={resetFilter}
           />
 
-          <div className="flex gap-7">
+          <div className="flex flex-col lg:flex-row gap-8 mt-8">
             <div className="flex-1">
               {allMementos.length > 0 ? (
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                   {allMementos.map((item) => (
                     <MementoCard
                       key={item._id}
@@ -239,18 +239,19 @@ const Home: React.FC = () => {
                 <EmptyCard imgSrc={Logo} message={getEmptyCardMessage(filterType)} />
               )}
             </div>
-            <div className="w-[320px]">
-              <div className="bg-white border border-slate-200 shadow-lg shadow-slate-200/60 rounded-lg">
-                <div className="p-3">
-                  <DayPicker
-                    captionLayout="dropdown"
-                    mode="range"
-                    required
-                    selected={dateRange}
-                    onSelect={onDaySelect}
-                    pagedNavigation
-                  />
-                </div>
+            
+            <div className="lg:w-[350px]">
+              <div className="glass-effect rounded-2xl p-6 sticky top-24">
+                <h3 className="text-lg font-semibold text-slate-800 mb-4">Date Filter</h3>
+                <DayPicker
+                  captionLayout="dropdown"
+                  mode="range"
+                  required
+                  selected={dateRange}
+                  onSelect={onDaySelect}
+                  pagedNavigation
+                  className="w-full"
+                />
               </div>
             </div>
           </div>
@@ -261,7 +262,7 @@ const Home: React.FC = () => {
         isOpen={openAddEditModal.isOpen}
         onRequestClose={() => {}}
         style={{
-          overlay: { backgroundColor: "rgba(0,0,0,0,2)", zIndex: 999 },
+          overlay: { backgroundColor: "rgba(0,0,0,0.5)", zIndex: 999 },
         }}
         appElement={document.getElementById("root") as HTMLElement}
         className="model-box"
@@ -280,7 +281,7 @@ const Home: React.FC = () => {
         isOpen={openViewModal.isOpen}
         onRequestClose={() => {}}
         style={{
-          overlay: { backgroundColor: "rgba(0,0,0,0,2)", zIndex: 999 },
+          overlay: { backgroundColor: "rgba(0,0,0,0.5)", zIndex: 999 },
         }}
         appElement={document.getElementById("root") as HTMLElement}
         className="model-box"
@@ -299,12 +300,12 @@ const Home: React.FC = () => {
       </Modal>
 
       <button
-        className="w-16 h-16 flex items-center justify-center rounded-full btn-primary fixed right-10 bottom-10"
+        className="w-16 h-16 flex items-center justify-center rounded-full bg-gradient-to-r from-blue-500 to-blue-600 text-white fixed right-8 bottom-8 shadow-2xl shadow-blue-300 hover:shadow-3xl hover:shadow-blue-400 transition-all duration-300 hover:scale-110 z-50"
         onClick={() =>
           setOpenAddEditModal({ isOpen: true, type: "add", data: null })
         }
       >
-        <MdAdd className="text-[32px] text-white" />
+        <MdAdd className="text-3xl" />
       </button>
       <ToastContainer />
     </>

@@ -2,6 +2,7 @@ import moment from "moment";
 import { useState, useEffect } from "react";
 import { FaHeart } from "react-icons/fa";
 import { GrMapLocation } from "react-icons/gr";
+
 interface MementoCardProps {
   imgUrl: File | string | null;
   title: string;
@@ -40,32 +41,41 @@ const MementoCard: React.FC<MementoCardProps> = ({
 
   return (
     <div
-      className="border-[1px] rounded-lg overflow-hidden bg-white hover:shadow-lg hover:shadow-slate-200 transition-all ease-in-out relative cursor-pointer"
+      className="card-hover bg-white rounded-2xl overflow-hidden border border-slate-100 relative cursor-pointer group"
       onClick={onClick}
     >
-      <img
-        src={imageSrc}
-        alt={title}
-        className="w-full h-56 object-contain rounded-lg"
-      />
-      <button
-        className="w-12 h-12 flex items-center justify-center bg-white/40 rounded-lg border border-white/30 absolute top-4 right-4"
-        onClick={(e) => {
-          e.stopPropagation();
-          onFavouriteClick && onFavouriteClick();
-        }}
-      >
-        <FaHeart
-          className={`icon-btn ${
-            isFavourite ? "text-red-500" : "text-stone-200 hover:text-red-500"
-          }`}
+      <div className="relative overflow-hidden">
+        <img
+          src={imageSrc}
+          alt={title}
+          className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-500"
         />
-      </button>
-      <div className="p-4" onClick={onClick}>
-        <div className="flex items-center gap-3 p-2">
+        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+        
+        <button
+          className="absolute top-4 right-4 w-12 h-12 flex items-center justify-center bg-white/90 backdrop-blur-sm rounded-xl border border-white/30 shadow-lg hover:bg-white transition-all duration-200 hover:scale-110"
+          onClick={(e) => {
+            e.stopPropagation();
+            onFavouriteClick && onFavouriteClick();
+          }}
+        >
+          <FaHeart
+            className={`text-xl transition-all duration-200 ${
+              isFavourite 
+                ? "text-red-500 scale-110" 
+                : "text-slate-400 hover:text-red-400"
+            }`}
+          />
+        </button>
+      </div>
+      
+      <div className="p-6">
+        <div className="flex items-start justify-between mb-3">
           <div className="flex-1">
-            <h6 className="text-sm font-medium">{title}</h6>
-            <span className="text-xs text-slate-500">
+            <h3 className="text-lg font-semibold text-slate-800 mb-1 line-clamp-1">
+              {title}
+            </h3>
+            <span className="text-sm text-slate-500 font-medium">
               {date && moment(date).isValid()
                 ? moment(date).format("Do MMM YYYY")
                 : "-"}
@@ -73,16 +83,21 @@ const MementoCard: React.FC<MementoCardProps> = ({
           </div>
         </div>
 
-        <p className="text=xs text-slate-600 mt-2">
-          {description?.slice(0, 60)}
+        <p className="text-sm text-slate-600 mb-4 line-clamp-2 leading-relaxed">
+          {description?.slice(0, 80)}
+          {description && description.length > 80 && "..."}
         </p>
-        <div className="inline-flex items-center gap-2 text-[13px] text-cyan-600 bg-cyan-200/40 rounded mt-3 px-2 py-1">
-          <GrMapLocation className="text-sm" />
-          {visitedLocation?.length &&
-            visitedLocation.map((item, index) =>
-              visitedLocation.length == index + 1 ? `${item}` : `${item}, `
-            )}
-        </div>
+        
+        {visitedLocation?.length > 0 && (
+          <div className="inline-flex items-center gap-2 text-sm text-blue-600 bg-blue-50 rounded-full px-3 py-2 border border-blue-100">
+            <GrMapLocation className="text-blue-500" />
+            <span className="font-medium">
+              {visitedLocation.map((item, index) =>
+                visitedLocation.length === index + 1 ? `${item}` : `${item}, `
+              )}
+            </span>
+          </div>
+        )}
       </div>
     </div>
   );
