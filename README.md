@@ -1,6 +1,7 @@
 # 📸 Memento - Journal App
 
 A modern web app for creating and organizing memories.
+<img width="1920" height="916" alt="image" src="https://github.com/user-attachments/assets/e3244a91-8111-469d-83da-a80f945239cc" />
 
 ## ✨ Features
 
